@@ -34,6 +34,7 @@ contract CertificateManagement {
     mapping(uint256 => mapping(address => Collaborator)) public collaborators;
 
     uint256 public nextCertificateId;
+    uint256 public tempCount = 0;
 
     // Function to create a new certificate
     function createCertificate(
@@ -41,7 +42,7 @@ contract CertificateManagement {
         string memory _data,
         uint256 _manufacturingDate,
         uint256 _expiryDate
-    ) public {
+    ) public payable {
         uint256 newId = nextCertificateId;
         CertificateCreation storage newCertificate = certificates[newId];
         newCertificate.id = newId;
@@ -167,5 +168,13 @@ contract CertificateManagement {
 function isNominee(uint256 _id, address _address) public view returns (bool) {
     require(_id < nextCertificateId, "Certificate does not exist");
     return certificates[_id].nominees[_address];
+}
+
+function getTempCount() public view returns(uint256){
+    return tempCount;
+}
+
+function setTempCount() public payable{
+    tempCount = tempCount+1;
 }
 }
