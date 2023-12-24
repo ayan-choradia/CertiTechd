@@ -41,7 +41,7 @@ contract CertificateManagement {
         string memory _data,
         uint256 _manufacturingDate,
         uint256 _expiryDate
-    ) public {
+    ) public payable {
         uint256 newId = nextCertificateId;
         CertificateCreation storage newCertificate = certificates[newId];
         newCertificate.id = newId;
