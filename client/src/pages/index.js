@@ -12,7 +12,7 @@ export default function Home() {
   const [web3, setWeb3] = useState(null);
   const [account, setAccount] = useState('0x');
   const [contractInstance, setContractInstance] = useState(null);
-  const contractAddress = '0xF3B5850149a45D5eb0D36eFc39Ad351C014aF581'; // Replace with your contract's address
+  const contractAddress = '0xd0943D108eDE5d2E91C387ba0d7b30020c5d3aF2'; // Replace with your contract's address
 
   useEffect(() => {
     if (typeof window !== 'undefined' && typeof window.ethereum !== 'undefined') {
@@ -73,6 +73,17 @@ export default function Home() {
     }
   }
 
+  const getCount = async () => {
+    const receipt = await contractInstance.methods.getTempCount().call();
+    console.log(receipt);
+  }
+
+
+  const setCount = async () => {
+    const receipt = await contractInstance.methods.setTempCount().send({ from: account });
+    console.log(receipt);
+  }
+
 
   return (
     <>
@@ -80,7 +91,9 @@ export default function Home() {
       <br></br>
       <button onClick={createCerti}>generate a new Certificate</button>
       <br></br>
-      <button onClick={getABI}>See ABI</button>
+      <button onClick={getABI}>See ABI</button><br></br>
+      <button onClick={getCount}>see Count</button><br></br>
+      <button onClick={setCount}>increase count</button>
     </>
   )
 }
