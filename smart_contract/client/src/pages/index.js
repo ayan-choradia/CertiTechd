@@ -1,8 +1,27 @@
+"use client"
+
 import { Button, Heading, VStack, Box, Flex, Spacer, Menu, MenuButton, MenuList, MenuItem, SimpleGrid } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import Web3 from 'web3';
 import { abi as contractABI } from '../../../build/contracts/CertificateManagement.json';
 import { Card, CardHeader, CardBody, CardFooter } from '@chakra-ui/react';
+import * as z from "zod"
+import { useForm } from "react-hook-form"
+import { Button1 } from "@/components/ui/button"
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { toast } from "@/components/ui/use-toast"
+
+
+
 
 const NavBar = () => {
   return (
@@ -26,6 +45,10 @@ const NavBar = () => {
   );
 };
 
+const formSchema = z.object({
+  username: z.string().min(2).max(50),
+})
+
 const CardSection = ({ title, onClick }) => {
   return (
     <Card w="640px">
@@ -39,6 +62,26 @@ const CardSection = ({ title, onClick }) => {
     </Card>
   );
 };
+
+export function InputForm() {
+  const form = useForm({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      username: "",
+    },
+  });
+
+  function onSubmit(data) {
+    toast({
+      title: "You submitted the following values:",
+      description: (
+        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+        </pre>
+      ),
+    });
+  }
+}
 
 export default function Home() {
   const [web3, setWeb3] = useState(null);
@@ -101,6 +144,7 @@ export default function Home() {
       console.error('Transaction error:', error);
     }
   };
+  
 
   const getCount = async () => {
     const receipt = await contractInstance.methods.getTempCount().call();
@@ -113,6 +157,7 @@ export default function Home() {
   };
 
   return (
+    
     <Flex direction="column">
       <NavBar />
       <VStack
@@ -168,8 +213,11 @@ export default function Home() {
           <Button colorScheme="green" onClick={setCount}>
             Increase Count
           </Button>
+          
         </Box>
       </VStack>
     </Flex>
+    
+    
   );
 }
