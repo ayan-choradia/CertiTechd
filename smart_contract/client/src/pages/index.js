@@ -12,7 +12,7 @@ export default function Home() {
   const [web3, setWeb3] = useState(null);
   const [account, setAccount] = useState('0x');
   const [contractInstance, setContractInstance] = useState(null);
-  const contractAddress = '0xd0943D108eDE5d2E91C387ba0d7b30020c5d3aF2'; // Replace with your contract's address
+  const contractAddress = '0x55f60e1f70af9f2c6f8e71335872ecf5610e5d65'; // Replace with your contract's address
 
   useEffect(() => {
     if (typeof window !== 'undefined' && typeof window.ethereum !== 'undefined') {
