@@ -1,23 +1,5 @@
 version: "3.3"
 services:
-  redis:
-    image: redis:latest
-    restart: unless-stopped
-    environment:
-      - REDIS_MAXMEMORY=1G
-    volumes:
-      - ./.docker/redis-data:/data
-    logging:
-      options:
-        max-size: "10m"
-        max-file: "3"
-
-  tests:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    command: python src/tests/run_test.py
-
   backend: &python
     restart: unless-stopped
     env_file:
@@ -29,30 +11,10 @@ services:
       - "${DOCKER_EXPOSE_PORT:-8000}:80"
     volumes:
       - ./:/app
-    depends_on:
-      - tests
     command: python src/main.py
     logging:
       options:
         max-size: "10m"
         max-file: "3"
-
-  worker:
-    <<: *python
-    ports: []
-    volumes: []
-    command: celery -A src.worker.core.celery_app worker -l info -c 1
-
-  celery-beat:
-    <<: *python
-    volumes: []
-    ports: []
-    command: celery -A src.worker.core.celery_app beat -l info
-
-  scanner_eth:
-    <<: *python
-    ports: []
-    volumes: []
-    command: python src/scanner/main.py
 
 
