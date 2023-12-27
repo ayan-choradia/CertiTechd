@@ -19,4 +19,5 @@ RUN pip install --no-cache-dir -r /tmp/requirements.txt
 ENV ODBCINI=/etc/odbc.ini
 ENV ODBCSYSINI=/etc
 COPY . /app
+EXPOSE 8000
 ENV PYTHONPATH=/app
