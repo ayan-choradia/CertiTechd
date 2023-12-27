@@ -4,11 +4,12 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from src.api.deps import contract
 from src.api.schemas import UserCreate
 from src.config import settings
 from src.db.session import get_db_session
 from src.user.models import User
-from src.user.utils import create_access_token
+from src.user.utils import create_access_token, get_current_user
 
 router = APIRouter()
 
@@ -44,8 +45,9 @@ async def signup(user: UserCreate, db: Session = Depends(get_db_session)):
             expires_delta=access_token_expires,
         )
         return {"access_token": access_token, "token_type": "bearer"}
-
-    new_user = User(wallet_address=user.wallet_address, user_name=user.user_name)
+    role = contract.functions.hasRole(user.wallet_address).call()
+    print(role)
+    new_user = User(wallet_address=user.wallet_address, role=role)
     db.add(new_user)
     db.commit()
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -54,3 +56,11 @@ async def signup(user: UserCreate, db: Session = Depends(get_db_session)):
         expires_delta=access_token_expires,
     )
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+@router.post("/me")
+async def read_user(
+    db: Session = Depends(get_db_session), user: User = Depends(get_current_user)
+):
+    user = db.query(User).filter(User.wallet_address == user["wallet_address"]).first()
+    return user

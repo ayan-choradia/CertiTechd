@@ -32,7 +32,6 @@ class UserCreate(BaseModel):
         The password of the user.
     """
 
-    user_name: str
     wallet_address: str
 
     class Config:
