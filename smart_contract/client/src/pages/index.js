@@ -6,11 +6,10 @@ import { Card, CardHeader, CardBody, CardFooter } from '@chakra-ui/react';
 
 const NavBar = () => {
   return (
-    <Flex p={4} bg="black" direction="column">
+    <Flex p={4} bg="black" justify="space-between" align="center">
       <Box>
-        {/* */}
+        <Heading color="black">Logo</Heading>
       </Box>
-      <Spacer />
       <Box>
         <Menu>
           <MenuButton as={Button} color="white">
@@ -114,7 +113,7 @@ export default function Home() {
   };
 
   return (
-    <Flex>
+    <Flex direction="column">
       <NavBar />
       <VStack
         spacing={4}
@@ -124,11 +123,27 @@ export default function Home() {
         backgroundImage="/background.jpg"
         backgroundSize="cover"
       >
-        <div style={{ backgroundColor: 'rgba(2, 2, 0, 0.8)', padding: '20px', borderRadius: '8px', width: '100%' }}>
-          <Heading mb={8}>Certificate Management System</Heading>
+        <Box
+          bgGradient="linear(to-b, #333333)"
+          p={4}
+          borderRadius="9px"
+          width="100%"
+        >
+          {/* Designer Box for Heading */}
+          <Box
+            bg="black"
+            color="white"
+            borderRadius="9px"
+            p={4}
+            mb={8}
+            textAlign="center"
+          >
+            <Heading>Certificate Management System</Heading>
+          </Box>
+         
           <Flex w="100%" justify="space-between">
             <VStack spacing={4} align="flex-start" w="48%">
-              <Heading mb={4}>Your Certificates</Heading>
+              <Heading mb={4} color="black">Your Certificates</Heading>
               <SimpleGrid columns={1} gap={8} w="100%" justifyItems="center">
                 <CardSection title="Certificate 1" onClick={() => getCerti(1)} />
                 <CardSection title="Certificate 2" onClick={() => getCerti(2)} />
@@ -136,7 +151,7 @@ export default function Home() {
               </SimpleGrid>
             </VStack>
             <VStack spacing={4} align="flex-start" w="48%">
-              <Heading mb={4}>Nominee Certificates</Heading>
+              <Heading mb={4} color="black">Nominee Certificates</Heading>
               <SimpleGrid columns={1} gap={8} w="100%" justifyItems="center">
                 <CardSection title="Nominee 1" onClick={() => getCerti(4)} />
                 <CardSection title="Nominee 2" onClick={() => getCerti(5)} />
@@ -153,7 +168,7 @@ export default function Home() {
           <Button colorScheme="green" onClick={setCount}>
             Increase Count
           </Button>
-        </div>
+        </Box>
       </VStack>
     </Flex>
   );
