@@ -10,7 +10,7 @@ web3 = Web3(
 
 
 contract = web3.eth.contract(
-    address=web3.to_checksum_address("0x4630601e92eFfb7EeD9954CcbF8eFc820795937B"),
+    address=web3.to_checksum_address("0x55f60e1f70af9f2c6f8e71335872ecf5610e5d65"),
     abi=CERT_ABI,
 )
 
