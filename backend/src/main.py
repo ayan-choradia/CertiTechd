@@ -3,6 +3,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi_pagination import add_pagination
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
+
 from src.api.router import router
 from src.config import settings
 from src.logging.config import LOGGING_CONFIG
@@ -23,7 +24,7 @@ if settings.BACKEND_CORS_ORIGINS:
         allow_origins=["*"],
         allow_credentials=True,
         allow_methods=["*"],
-        allow_headers=  ["*"],
+        allow_headers=["*"],
     )
 
 
