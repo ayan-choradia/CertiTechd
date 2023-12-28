@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from src.api.deps import contract, web3
-from src.api.schemas import CreateCertSchema
+from src.api.schemas import CreateCertSchema, CreateUser
 from src.db.session import get_db_session
 from src.user.models import User
 from src.user.router import router as user_router
@@ -36,10 +36,6 @@ async def set_temp_count(
             ),
         }
     )
-    # hash = sign_transaction(
-    #     transaction=transaction_,
-    #     private_key="c8d2a7cbd2d937e9d1a63b212b768a19f6f961ea0a964473503ce0db17647993",
-    # )
     return transaction_
 
 
@@ -70,34 +66,55 @@ async def create_certificate(
             ),
         }
     )
-    # hash = sign_transaction(
-    #     transaction=transaction_,
-    #     private_key="c8d2a7cbd2d937e9d1a63b212b768a19f6f961ea0a964473503ce0db17647993",
-    # )
     return transaction_
 
 
-
-@router.get("/create-cert/")
-async def create_certificate(
-    data=CreateCertSchema,
+@router.post("/create-user/")
+async def createUser(
+    data:CreateUser,
     db: Session = Depends(get_db_session),
     user: User = Depends(get_current_user),
 ):
-    transaction_ = contract.functions.createCertificate(
-        data.recipent_address, data.data, data.manufacturing_date, data.expiry_date
-    ).build_transaction(
-        {
-            "chainId": 137,
-            "gas": 500000,
-            "gasPrice": web3.eth.gas_price,
-            "nonce": web3.eth.get_transaction_count(
-                web3.to_checksum_address(user["wallet_address"])
-            ),
-        }
-    )
-    # hash = sign_transaction(
-    #     transaction=transaction_,
-    #     private_key="c8d2a7cbd2d937e9d1a63b212b768a19f6f961ea0a964473503ce0db17647993",
-    # )
+
+    current_user = db.query(User).filter(User.wallet_address == user["wallet_address"]).first()
+    print(current_user.role)
+    stoed_user = db.query(User).where(User.wallet_address == data.wallet_address).first()
+    if stoed_user:
+        raise HTTPException(status_code=401, detail="Aready Exist")
+    if current_user.role == "industry":
+        transaction_ = contract.functions.updateRole(
+            web3.to_checksum_address(data.wallet_address), "broker"
+        ).build_transaction(
+            {
+                "chainId": 137,
+                "gas": 500000,
+                "gasPrice": web3.eth.gas_price,
+                "nonce": web3.eth.get_transaction_count(
+                    web3.to_checksum_address(user["wallet_address"])
+                ),
+            }
+        )
+        stoed_user = db.query(User).where(User.wallet_address == data.wallet_address).first()
+        if not stoed_user:
+            user  = User(wallet_address=data.wallet_address, role='broker')
+    elif current_user.role == "broker":
+        transaction_ = contract.functions.updateRole(
+            web3.to_checksum_address(data.wallet_address), "client"
+        ).build_transaction(
+            {
+                "chainId": 137,
+                "gas": 500000,
+                "gasPrice": web3.eth.gas_price,
+                "nonce": web3.eth.get_transaction_count(
+                    web3.to_checksum_address(user["wallet_address"])
+                ),
+            }
+        )
+        stoed_user = db.query(User).where(User.wallet_address == data.wallet_address).first()
+        if not stoed_user:
+            user  = User(wallet_address=data.wallet_address, role='client')
+    else:
+        raise HTTPException(status_code=401, detail="No Rights for this function")
+    db.add(user)
+    db.commit()
     return transaction_

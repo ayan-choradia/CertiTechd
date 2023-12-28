@@ -1,7 +1,6 @@
 import logging
 from datetime import datetime, timedelta
 from typing import Optional
-
 import jwt
 from fastapi import Depends, HTTPException, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -80,6 +79,7 @@ def get_current_user(
             token.credentials, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
         )
         wallet_address = payload.get("sub")
+        role = payload.get("sub")
         id = payload.get("id")
         if wallet_address is None:
             raise HTTPException(status_code=401, detail="Invalid authentication token")

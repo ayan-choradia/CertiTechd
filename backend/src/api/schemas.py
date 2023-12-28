@@ -14,6 +14,7 @@ class UserSchema(BaseModel):
     """
 
     wallet_address: str
+    role: str
     id: int
 
     class Config:
@@ -43,3 +44,6 @@ class CreateCertSchema(BaseModel):
     data: str
     manufacturing_date: int
     expiry_date: int
+
+class CreateUser(BaseModel):
+    wallet_address:str

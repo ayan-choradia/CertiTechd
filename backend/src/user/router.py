@@ -1,10 +1,10 @@
 from datetime import timedelta
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from src.api.deps import contract
+from src.api.deps import contract, web3
 from src.api.schemas import UserCreate
 from src.config import settings
 from src.db.session import get_db_session
@@ -34,6 +34,12 @@ async def signup(user: UserCreate, db: Session = Depends(get_db_session)):
     existing_user = db.execute(
         select(User).where(User.wallet_address == user.wallet_address)
     )
+    role = contract.functions.hasRole(
+        web3.to_checksum_address(user.wallet_address)
+    ).call()
+    print(len(role))
+    if len(role) == 0:
+        raise HTTPException(status_code=404, detail="You need to verify first")
     if existing_user.scalar():
         stored_user = db.execute(
             select(User).where(User.wallet_address == user.wallet_address)
@@ -41,18 +47,20 @@ async def signup(user: UserCreate, db: Session = Depends(get_db_session)):
         stored_user = stored_user.scalar()
         access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
         access_token = create_access_token(
-            data={"sub": stored_user.wallet_address, "id": stored_user.id},
+            data={
+                "sub": stored_user.wallet_address,
+                "id": stored_user.id,
+                "role": stored_user.role,
+            },
             expires_delta=access_token_expires,
         )
         return {"access_token": access_token, "token_type": "bearer"}
-    role = contract.functions.hasRole(user.wallet_address).call()
-    print(role)
     new_user = User(wallet_address=user.wallet_address, role=role)
     db.add(new_user)
     db.commit()
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": new_user.wallet_address, "id": new_user.id},
+        data={"sub": new_user.wallet_address, "id": new_user.id, "role": new_user.role},
         expires_delta=access_token_expires,
     )
     return {"access_token": access_token, "token_type": "bearer"}

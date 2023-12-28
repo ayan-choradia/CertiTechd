@@ -3,6 +3,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi_pagination import add_pagination
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
+# from fastapi.middleware.cors import CORSMiddleware
 
 from src.api.router import router
 from src.config import settings
