@@ -45,5 +45,10 @@ class CreateCertSchema(BaseModel):
     manufacturing_date: int
     expiry_date: int
 
+
 class CreateUser(BaseModel):
-    wallet_address:str
+    wallet_address: str
+
+
+class getCertSchema(BaseModel):
+    pass
