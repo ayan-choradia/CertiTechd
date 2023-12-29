@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export default async function auth(wallet_address) {
+export default async function baseURL() {
   try {
     // Define headers
     const headers = {
@@ -15,7 +15,7 @@ export default async function auth(wallet_address) {
     };
 
     // Make POST request using Axios
-    const response = await axios.post('/api/proxy/'
+    const response = await axios.post('/api/proxy/',
       'http://localhost:8000/api/v1/users/auth',
       requestBody,
       {
@@ -23,7 +23,7 @@ export default async function auth(wallet_address) {
       }
     );
 
-    return(response.data); // Set fetched data to state variable
+    return (response.data); // Set fetched data to state variable
   } catch (err) {
     console.log(err);
   }

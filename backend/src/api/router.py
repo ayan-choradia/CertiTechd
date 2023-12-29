@@ -324,3 +324,42 @@ async def approve_changes(
             }
         )
         return transaction_
+
+
+@router.get("/has-role/")
+async def seeRole(
+    _address: str,
+    db: Session = Depends(get_db_session),
+    user: User = Depends(get_current_user),
+):
+    transaction_ = contract.functions.hasRole(web3.to_checksum_address(_address)).build_transaction(
+        {
+            "chainId": 137,
+            "gas": 500000,
+            "gasPrice": web3.eth.gas_price,
+            "nonce": web3.eth.get_transaction_count(
+                web3.to_checksum_address(user["wallet_address"])
+            ),
+        }
+    )
+    return transaction_
+
+
+@router.get("/update-role/")
+async def seeRole(
+    _address: str,
+    _role: str,
+    db: Session = Depends(get_db_session),
+    user: User = Depends(get_current_user),
+):
+    transaction_ = contract.functions.updateRole(web3.to_checksum_address(_address), _role).build_transaction(
+        {
+            "chainId": 137,
+            "gas": 500000,
+            "gasPrice": web3.eth.gas_price,
+            "nonce": web3.eth.get_transaction_count(
+                web3.to_checksum_address(user["wallet_address"])
+            ),
+        }
+    )
+    return transaction_

@@ -10,7 +10,7 @@ export default async function handler(req, res) {
       'Content-Type': 'application/json',
     };
 
-    const response = await axios.post('http://localhost:8000/api/v1/users/auth', {
+    const response = await axios.post('http://localhost:8000/api/v1/', {
       wallet_address,
     }, {
       headers: headers,

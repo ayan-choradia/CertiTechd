@@ -1,5 +1,6 @@
 "use client"
-
+import axios from 'axios';
+import { getCookie, setCookie } from 'cookies-next';
 import { Button, Heading, VStack, Box, Flex, Spacer, Menu, MenuButton, MenuList, MenuItem, SimpleGrid } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import Web3 from 'web3';
@@ -19,8 +20,6 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { toast } from "@/components/ui/use-toast"
-
-
 
 
 const NavBar = () => {
@@ -70,9 +69,7 @@ export function InputForm() {
       username: "",
     },
   });
-// import auth from "./api/hello.js";
-import axios from 'axios';
-import { getCookie, setCookie } from 'cookies-next';
+  // import auth from "./api/hello.js";
 
 
   function onSubmit(data) {
@@ -102,20 +99,22 @@ export default function Home() {
         .request({ method: 'eth_requestAccounts' })
         .then((accounts) => {
           setAccount(accounts[0]);
-          const fetchData = async (account) => {
-            try {
-              const response = await axios.post('/api/proxy', {
-                wallet_address: account, // Replace with your wallet address
-              });
-              console.log('Response:', response.data);
-              setCookie('access_token',response.data.access_token,{});
-            } catch (error) {
-              console.error('Error:', error.message);
-            }
+          const headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': 'http://localhost:3000',
           };
-          if(!getCookie('access_token')){
-            fetchData(accounts[0]);
-          }
+          const fetch = async () => {
+            const response = await axios.post(
+              'http://localhost:8000/api/v1/users/auth',
+              { wallet_address: accounts[0] },
+              {
+                headers: headers,
+              }
+            );
+            console.log(response);
+          };
+          fetch();
         })
         .catch((error) => {
           console.error('Error requesting accounts:', error);
@@ -163,7 +162,7 @@ export default function Home() {
       console.error('Transaction error:', error);
     }
   };
-  
+
 
   const getCount = async () => {
     const receipt = await contractInstance.methods.getTempCount().call();
@@ -176,7 +175,7 @@ export default function Home() {
   };
 
   return (
-    
+
     <Flex direction="column">
       <NavBar />
       <VStack
@@ -204,7 +203,7 @@ export default function Home() {
           >
             <Heading>Certificate Management System</Heading>
           </Box>
-         
+
           <Flex w="100%" justify="space-between">
             <VStack spacing={4} align="flex-start" w="48%">
               <Heading mb={4} color="black">Your Certificates</Heading>
@@ -226,17 +225,17 @@ export default function Home() {
           <Button colorScheme="blue" onClick={createCerti}>
             Generate a new Certificate
           </Button>
-          <Button colorScheme="purple" onClick={getCount}>
+          <Button colorScheme="purple" onClick={getCerti}>
             See Count
           </Button>
           <Button colorScheme="green" onClick={setCount}>
             Increase Count
           </Button>
-          
+
         </Box>
       </VStack>
     </Flex>
-    
-    
+
+
   );
 }
